@@ -56,15 +56,27 @@ _read_files () {
 # ---------------------------------------------------------------------------------
 # Function to return Protein-to-Protein Interactions
 _search_gene () {
-  # Output | Pattern matching for protein | Output Column 2 only | Print 1st Alias only | Print non matching proteins only | Remove dashes
-  echo ${YELLOW} "$(cat "ppi_interactions.txt" | grep -i -w $1 | awk -F '\t' '{ print $2 }' | sed 's/|.*//' | grep -i -v -e $1 | awk -F- 'NF<=1')"
-  # Output | Pattern matching for protein | Output Column 2 only | Print 2nd Alias only | Print non matching proteins only | Remove dashes
-  echo ${GREEN} "$(cat "ppi_interactions.txt" | grep -i -w $1 | awk -F '\t' '{ print $1 }' | sed 's/|.*//' | grep -i -v -e $1 | awk -F- 'NF<=1')"
+    read -p "Enter Protein Name [Alias] or ID: " ans
+   # Output | Pattern matching for protein | Output Column 2 only | Print 1st Alias only | Print non matching proteins only | Remove dashes
+    echo ${YELLOW} "$(cat "ppi_interactions.txt" | grep -i -w $ans | awk -F '\t' '{ print $2,"\t",$4 }' | sed 's/|.*//' | grep -i -v -e $ans | awk -F- 'NF<=1')"
 }
 # ---------------------------------------------------------------------------------
 
 
-_init_project 
+_menu() {
+  # $1 checking 1st argument - menu choice
+  if [ "$1" = 1 ] 
+  then
+    _search_gene
+  else
+    echo "This feature has not been implemented yet!"
+  fi
+}
 
-read -p "Enter Protein Name [Alias]: " ans
-_search_gene $ans
+_init_project 
+echo "------ -- Protein-to-Protein Query Console -- -------"
+echo "|       1. Query PPI using Protein ID/Alias         |"
+echo "|       2. xxxxx xxx xxxxx xxxxxxx xxxxx            |"
+echo "------ -------------------------------------- -------"
+read -p "Enter Choice: " choice
+_menu "$choice"
