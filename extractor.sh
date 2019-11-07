@@ -27,6 +27,43 @@ _init_project () {
     echo ${WHITE}
     _read_files "$BIOGRID_FILES"
   fi
+  
+  echo ${YELLOW} "Initializing Id_mapping file"
+  
+  idmapping_dir=$(find . -name idmapping_selected.tab -printf '%h\n') 
+
+  $(find . -name ppi_interactions.txt | grep -q ".")
+  if [ $? = 0 ]
+  then
+    echo ${WHITE} 
+    echo "idmapping_selected_clean.tab file found"
+
+
+    if [ -n "$(ls -A "$idmapping_dir/"small-chunks/ 2>/dev/null)" ]
+    then
+      # Sort smaller files
+      echo "Sorting file chunks..."
+      for X in "$idmapping_dir/"small-chunks/*
+      do 
+        echo "Sorting $X"
+        echo $(sort -k1 -n -m $X >> "$idmapping_dir/"idmapping_selected_sorted.tab)
+      done 
+
+      #echo "Chunking sorted files..."
+      #$(sort -k1 -n -m sorted-small-chunk* > "$idmapping_dir/"idmapping_sorted_selected.tab)
+
+      echo "Removing file chunks..."
+      $(rm -r "$idmapping_dir/"small-chunks)
+    else {
+      # Break big file into smaller files
+      echo "Truncating file into smaller chunks..."
+      $(mkdir -p "$idmapping_dir/small-chunks" && split -l 2000000 "$idmapping_dir/idmapping_selected_clean.tab" "$idmapping_dir/small-chunks/small-chunk-")
+    }
+    fi
+  else 
+    echo "Extracting required data from idmapping_selected.tab..."
+    $(cat datasets/idmapping/idmapping_selected.tab | awk -F '\t' '{ print $3,"\t",$1,"\t",$2 }' >> $idmapping_dir/idmapping_selected_clean.tab)
+  fi
 }
 # ---------------------------------------------------------------------------------
 
@@ -62,6 +99,7 @@ _search_gene () {
 }
 # ---------------------------------------------------------------------------------
 
+_search_cross_references() {}
 
 _menu() {
   # $1 checking 1st argument - menu choice
