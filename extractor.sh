@@ -15,8 +15,8 @@ WHITE='\033[0;37m'
 # ---------------------------------------------------------------------------------
 # Function to Initialize project with necessary files
 _init_project () {
-  $(find . -name p2p_interactions.txt | grep -q ".")
-  # Get exit status code of "$(find . -name p2p_interactions.txt | grep -q ".")"
+  $(find . -name ppi_interactions.txt | grep -q ".")
+  # Get exit status code of "$(find . -name ppi_interactions.txt | grep -q ".")"
   if [ $? = 0 ]
   then
     echo ${GREEN} "Interactors file found!"
@@ -38,15 +38,15 @@ _read_files () {
     echo ${WHITE}
     echo "Parsing $f"
     # Output | Remove entrez label | ID Interactor Col A TAB B TAB Aliases Interactor Col A TAB B | Removing ID & Alias Headings | Removing Synonym labels >> Output_File
-    echo $(cat $f | sed 's/entrez[[:blank:]]gene\/locuslink://g' | awk -F '\t' '{ print $1,"\t",$2,"\t" $5,"\t",$6 }' | awk '!/#/' | sed 's/([^)]*)//g' >> p2p_interactions.txt)
+    echo $(cat $f | sed 's/entrez[[:blank:]]gene\/locuslink://g' | awk -F '\t' '{ print $1,"\t",$2,"\t" $5,"\t",$6 }' | awk '!/#/' | sed 's/([^)]*)//g' >> ppi_interactions.txt)
     echo ${GREEN} "DONE!"
     echo ${WHITE}
   done
   echo "Cleaning up file..."
 
   # Removing blank newlines
-  # echo $(sed -i '/^$/d' p2p_interactions.txt)
-  # echo $(sed '/entrez/,/locuslink/d' p2p_interactions.txt)
+  # echo $(sed -i '/^$/d' ppi_interactions.txt)
+  # echo $(sed '/entrez/,/locuslink/d' ppi_interactions.txt)
   echo ${GREEN} "DONE!"
   echo ${WHITE}
 }
@@ -57,9 +57,9 @@ _read_files () {
 # Function to return Protein-to-Protein Interactions
 _search_gene () {
   # Output | Pattern matching for protein | Output Column 2 only | Print 1st Alias only | Print non matching proteins only | Remove dashes
-  echo ${YELLOW} "$(cat "p2p_interactions.txt" | grep -i -w $1 | awk -F '\t' '{ print $2 }' | sed 's/|.*//' | grep -i -v -e $1 | awk -F- 'NF<=1')"
+  echo ${YELLOW} "$(cat "ppi_interactions.txt" | grep -i -w $1 | awk -F '\t' '{ print $2 }' | sed 's/|.*//' | grep -i -v -e $1 | awk -F- 'NF<=1')"
   # Output | Pattern matching for protein | Output Column 2 only | Print 2nd Alias only | Print non matching proteins only | Remove dashes
-  echo ${GREEN} "$(cat "p2p_interactions.txt" | grep -i -w $1 | awk -F '\t' '{ print $1 }' | sed 's/|.*//' | grep -i -v -e $1 | awk -F- 'NF<=1')"
+  echo ${GREEN} "$(cat "ppi_interactions.txt" | grep -i -w $1 | awk -F '\t' '{ print $1 }' | sed 's/|.*//' | grep -i -v -e $1 | awk -F- 'NF<=1')"
 }
 # ---------------------------------------------------------------------------------
 
