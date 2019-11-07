@@ -27,6 +27,28 @@ _init_project () {
     echo ${WHITE}
     _read_files "$BIOGRID_FILES"
   fi
+  
+  echo ${YELLOW} "Initializing Id_mapping file"
+  
+  idmapping_dir=$(find . -name idmapping_selected.tab -printf '%h\n') 
+  $(cat datasets/idmapping/idmapping_selected.tab | awk -F '\t' '{ print $3,"\t",$1,"\t",$2 }' >> $idmapping_dir/idmapping_selected_clean.tab)
+
+  echo ${WHITE} 
+  echo "Truncating file into smaller chunks..."
+  $(split -l 2000000 "$idmapping_dir/idmapping_selected_clean.tab" "$idmapping_dir/small_chunk/")
+
+  echo "Sorting file chunks..."
+  for X in "$idmapping_dir/"small-chunk/*
+  do 
+    $(sort -t'|' -k2 -nr < $X > sorted-$X)
+  done 
+
+  echo "Chunking sorted files..."
+  $(sort -t'|' -k2 -nr -m sorted-small-chunk* > idmapping_sorted_selected.tab)
+
+  echo "Removing file chunks..."
+  $(rm "$idmapping_dir/"small-chunk* "$idmapping_dir/"sorted-small-chunk*)
+
 }
 # ---------------------------------------------------------------------------------
 
@@ -62,6 +84,7 @@ _search_gene () {
 }
 # ---------------------------------------------------------------------------------
 
+_search_cross_references() {}
 
 _menu() {
   # $1 checking 1st argument - menu choice
