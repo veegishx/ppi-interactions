@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Here we go bois
 
 # Declaring array of Biogrid files
 BIOGRID_FILES=$(find . -name biogrid)/*
